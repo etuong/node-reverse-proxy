@@ -10,7 +10,7 @@
     "nodemon": "^2.0.20"
   },
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon server.js"
   },
   "name": "nginx-auth-server",
   "version": "1.0.0",
