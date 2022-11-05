@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logged In</title>
+  </head>
+
+  <body>
+    <div class="container" id="content">
+      <button id="logout">Log Out</button>
+      <h1>Hello <%= user %></h1>
+      <p>You are logged in.</p>
+      <p>Visit <a href="/" id="link">/</a>.</p>
+    </div>
+
+    <script>
+      const content = document.getElementById("content");
+      content.style.display = "block";
+      document.title = "Logged in to " + location.host;
+
+      const logout = () => {
+        fetch("/logout", {
+          method: "POST",
+        }).then((response) => {
+          if (response.status !== 200) {
+            alert("Log out failed");
+            return;
+          }
+
+          window.location.href = "/login";
+        });
+      };
+
+      const buttonLogout = document.getElementById("logout");
+      buttonLogout.addEventListener("click", (e) => {
+        e.preventDefault();
+        logout();
+      });
+
+      const visitLink = document.getElementById("link");
+      visitLink.innerText = location.host;
+      visitLink.href = location.protocol + "//" + location.host;
+    </script>
+  </body>
+</html>
