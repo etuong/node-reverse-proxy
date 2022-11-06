@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const Navigation = () => {
@@ -9,6 +9,11 @@ const Navigation = () => {
     { href: "/about", name: "About" },
     { href: "/secret", name: "Secret" },
   ];
+
+  useEffect(() => {
+    const pathname = window.location.pathname;
+    setActiveId(links.findIndex((l) => l.href === pathname));
+  }, []);
 
   return (
     <div className="nav">

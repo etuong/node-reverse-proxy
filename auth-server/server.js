@@ -60,30 +60,42 @@ const jwtVerify = (req, res, next) => {
 app.use(jwtVerify);
 
 app.get("/", (req, res) => {
+  console.log("Entering /, redirecting to /login");
   res.redirect("/login");
 });
 
 app.get("/logged-in", (req, res) => {
-  if (!req.user) return res.redirect("/login");
+  console.log("Entering /logged-in");
+
+  if (!req.user) {
+    console.log("User is unauthenticated, redirecting to /login");
+    return res.redirect("/login");
+  }
+
   return res.render("logged-in", { user: req.user || null });
 });
 
 app.get("/login", (req, res) => {
+  console.log("Entering /login");
+
   // Parameters from original client request
   const requestUri = req.headers["x-original-uri"];
-  const remoteAddr = req.headers["x-original-remote-addr"];
   const host = req.headers["x-original-host"];
-
-  if (req.user) return res.redirect("/logged-in");
+  
+  if (req.user) {
+    console.log("User is already authenticated, redirecting to /logged-in");
+    return res.redirect("/logged-in");
+  }
 
   return res.render("login", {
     referer: requestUri ? `${host}${requestUri}` : "/",
   });
 });
 
-// Called by Nginx sub-request
 // Expect JWT in cookie 'authToken'
 app.get("/auth", (req, res, next) => {
+  console.log("Entering /auth");
+
   if (req.user) {
     // User is already authenticated, refresh cookie
     const token = jwt.sign({ user: req.user }, tokenSecret, {
@@ -97,13 +109,17 @@ app.get("/auth", (req, res, next) => {
       secure: cookieSecure,
     });
 
+    console.log("User is authenticated");
     return res.sendStatus(200);
   } else {
+    console.log("User is unauthenticated");
     return res.sendStatus(401);
   }
 });
 
 app.post("/login", apiLimiter, (req, res) => {
+  console.log("Attempting to login");
+
   const { user, password } = req.body;
 
   if (checkAuth(user, password)) {
@@ -117,13 +133,18 @@ app.post("/login", apiLimiter, (req, res) => {
       maxAge: 1000 * 86400 * expiryDays,
       secure: cookieSecure,
     });
+
+    console.log("Login successful");
+
     return res.send({ status: "ok" });
   }
 
+  console.log("Login unsuccessful");
   res.sendStatus(401);
 });
 
 app.get("/logout", (req, res) => {
+  console.log("Entering /logout");
   res.clearCookie("authToken");
   res.redirect("/login");
 });
