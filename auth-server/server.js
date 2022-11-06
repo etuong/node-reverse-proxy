@@ -25,7 +25,7 @@ const apiLimiter = rateLimit({
 dotenv.config();
 
 const port = process.env.AUTH_PORT || 3000;
-const expiryDays = 7;
+const expiryDays = 1;
 const cookieSecure =
   "AUTH_COOKIE_SECURE" in process.env
     ? process.env.AUTH_COOKIE_SECURE === "true"

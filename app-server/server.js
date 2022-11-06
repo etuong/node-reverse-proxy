@@ -1,11 +1,8 @@
 const path = require("path");
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
-const axios = require("axios");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const authServer = "http://localhost:3000";
-const cookieParser = require("cookie-parser");
 
 const onProxyReq = (proxyReq, req, res) => {
   proxyReq.setHeader("X-Original-URI", req.url);
@@ -21,7 +18,7 @@ app.all("*", (req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, "build")));
-app.use(cookieParser());
+
 app.get(
   "^/(|about|secret)$",
   createProxyMiddleware({
@@ -32,27 +29,6 @@ app.get(
       if (proxyRes.statusCode === 401) res.redirect("/login");
       else {
         res.redirect(req.headers.host + req.url);
-      }
-    },
-  })
-
-  //   res.redirect("/auth");
-  //   console.log(req.cookies);
-  //   axios
-  //     .get(`${authServer}/auth`, { withCredentials: true })
-  //     .then((data) => console.log(data.statusCode))
-  //     .catch((err) => res.redirect("/login"));
-);
-
-app.use(
-  "/auth",
-  createProxyMiddleware({
-    target: authServer,
-    onProxyReq,
-    onProxyRes: (proxyRes, req, res) => {
-      if (proxyRes.statusCode === 401) res.redirect("/login");
-      else {
-        res.redirect("/" + req.url);
       }
     },
   })
