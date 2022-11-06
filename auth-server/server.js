@@ -64,34 +64,6 @@ app.get("/", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/logged-in", (req, res) => {
-  console.log("Entering /logged-in");
-
-  if (!req.user) {
-    console.log("User is unauthenticated, redirecting to /login");
-    return res.redirect("/login");
-  }
-
-  return res.render("logged-in", { user: req.user || null });
-});
-
-app.get("/login", (req, res) => {
-  console.log("Entering /login");
-
-  // Parameters from original client request
-  const requestUri = req.headers["x-original-uri"];
-  const host = req.headers["x-original-host"];
-  
-  if (req.user) {
-    console.log("User is already authenticated, redirecting to /logged-in");
-    return res.redirect("/logged-in");
-  }
-
-  return res.render("login", {
-    referer: requestUri ? `${host}${requestUri}` : "/",
-  });
-});
-
 // Expect JWT in cookie 'authToken'
 app.get("/auth", (req, res, next) => {
   console.log("Entering /auth");
@@ -115,6 +87,34 @@ app.get("/auth", (req, res, next) => {
     console.log("User is unauthenticated");
     return res.sendStatus(401);
   }
+});
+
+app.get("/logged-in", (req, res) => {
+  console.log("Entering /logged-in");
+
+  if (!req.user) {
+    console.log("User is unauthenticated, redirecting to /login");
+    return res.redirect("/login");
+  }
+
+  return res.render("logged-in", { user: req.user || null });
+});
+
+app.get("/login", (req, res) => {
+  console.log("Entering /login");
+
+  // Parameters from original client request
+  const requestUri = req.headers["x-original-uri"];
+  const host = req.headers["x-original-host"];
+
+  if (req.user) {
+    console.log("User is already authenticated, redirecting to /logged-in");
+    return res.redirect("/logged-in");
+  }
+
+  return res.render("login", {
+    referer: requestUri ? `${host}${requestUri}` : "/",
+  });
 });
 
 app.post("/login", apiLimiter, (req, res) => {

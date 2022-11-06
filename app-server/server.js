@@ -1,29 +1,15 @@
 const path = require("path");
 const express = require("express");
 const app = express();
-const proxy = require("express-http-proxy");
+const bodyParser = require("body-parser");
+const axios = require("axios");
 const { createProxyMiddleware } = require("http-proxy-middleware");
-// const httpProxy = require("http-proxy");
-// const authProxy = httpProxy.createProxyServer();
 const authServer = "http://localhost:3000";
+const cookieParser = require("cookie-parser");
 
-// authProxy.on("proxyReq", function (proxyReq, req, res) {
-//   proxyReq.setHeader("X-Original-URI", req.url);
-//   proxyReq.setHeader("X-Original-Host", req.headers.host);
-// });
-
-// authProxy.on("proxyRes", function (proxyRes, req, res) {
-//   if (proxyRes.statusCode === 401) res.redirect("/login");
-// });
 const onProxyReq = (proxyReq, req, res) => {
   proxyReq.setHeader("X-Original-URI", req.url);
   proxyReq.setHeader("X-Original-Host", req.headers.host);
-};
-
-const proxyReqOptDecorator = function (proxyReqOpts, srcReq) {
-  proxyReqOpts.headers["X-Original-URI"] = srcReq.url;
-  proxyReqOpts.headers["X-Original-Host"] = srcReq.headers.host;
-  return proxyReqOpts;
 };
 
 app.all("*", (req, res, next) => {
@@ -34,41 +20,51 @@ app.all("*", (req, res, next) => {
   next();
 });
 
-// Proxy to Auth endpoint
+app.use(express.static(path.join(__dirname, "build")));
+app.use(cookieParser());
 app.get(
-  "/auth",
-  proxy(authServer, {
-    proxyReqOptDecorator,
-    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
-      if (proxyRes.statusCode === 401) {
-        return userRes.redirect("/login");
+  "^/(|about|secret)$",
+  createProxyMiddleware({
+    target: authServer + "/auth",
+    ignorePath: true,
+    onProxyReq,
+    onProxyRes: (proxyRes, req, res) => {
+      if (proxyRes.statusCode === 401) res.redirect("/login");
+      else {
+        res.redirect(req.headers.host + req.url);
       }
+    },
+  })
 
-      return proxyResData;
+  //   res.redirect("/auth");
+  //   console.log(req.cookies);
+  //   axios
+  //     .get(`${authServer}/auth`, { withCredentials: true })
+  //     .then((data) => console.log(data.statusCode))
+  //     .catch((err) => res.redirect("/login"));
+);
+
+app.use(
+  "/auth",
+  createProxyMiddleware({
+    target: authServer,
+    onProxyReq,
+    onProxyRes: (proxyRes, req, res) => {
+      if (proxyRes.statusCode === 401) res.redirect("/login");
+      else {
+        res.redirect("/" + req.url);
+      }
     },
   })
 );
 
-app.get(
-  "/login",
-  proxy(`${authServer}`, {
-    proxyReqOptDecorator,
+app.use(
+  "*",
+  createProxyMiddleware({
+    target: authServer,
+    onProxyReq,
   })
 );
-
-// app.post("/login", (req, res) => {
-//   authProxy.web(req, res, { target: `${authServer}` });
-// });
-
-app.get("^/(|about|secret)$", (req, res) => {
-  res.redirect("/auth");
-});
-
-// app.use(express.static(path.join(__dirname, "build")));
-
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "build", "index.html"));
-// });
 
 app.listen(5000, () => {
   console.log("Server is listening on port 5000");
