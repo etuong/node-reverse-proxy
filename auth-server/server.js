@@ -74,18 +74,23 @@ app.get("/auth", (req, res, next) => {
       expiresIn: `${expiryDays}d`,
     });
 
-    // Set JWT as cookie, 7 day age
+    // Set JWT as cookie
     res.cookie("authToken", token, {
       httpOnly: true,
       maxAge: 1000 * 86400 * expiryDays,
       secure: cookieSecure,
     });
 
+    // Parameters from original client request
+    const requestUri = req.headers["x-original-uri"];
+    const host = req.headers["x-original-host"];
+    const referer = `${host}${requestUri}`;
+
     console.log("User is authenticated");
-    return res.sendStatus(200);
+    return res.redirect(referer);
   } else {
     console.log("User is unauthenticated");
-    return res.sendStatus(401);
+    return res.redirect("/login");
   }
 });
 

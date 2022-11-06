@@ -25,12 +25,6 @@ app.get(
     target: authServer + "/auth",
     ignorePath: true,
     onProxyReq,
-    onProxyRes: (proxyRes, req, res) => {
-      if (proxyRes.statusCode === 401) res.redirect("/login");
-      else {
-        res.redirect(req.headers.host + req.url);
-      }
-    },
   })
 );
 
