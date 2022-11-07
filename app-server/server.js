@@ -19,8 +19,12 @@ app.all("*", (req, res, next) => {
 
 app.use(express.static(path.join(__dirname, "build")));
 
+app.get("^/(|about)$", (req, res) => {
+  res.sendFile("index.html", { root: path.join(__dirname, "build") });
+});
+
 app.get(
-  "^/(|about|secret)$",
+  "^/(|secret)$",
   createProxyMiddleware({
     target: authServer + "/auth",
     ignorePath: true,

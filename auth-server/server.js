@@ -48,6 +48,7 @@ const jwtVerify = (req, res, next) => {
       // e.g malformed token, bad signature etc - clear the cookie
       console.log(err);
       res.clearCookie("authToken");
+      res.clearCookie("authUser");
       return res.status(403).send(err);
     }
 
@@ -76,7 +77,7 @@ app.get("/auth", (req, res, next) => {
 
     // Set JWT as cookie
     res.cookie("authToken", token, {
-      httpOnly: true,
+      // httpOnly: true,
       maxAge: 1000 * 86400 * expiryDays,
       secure: cookieSecure,
     });
@@ -132,9 +133,15 @@ app.post("/login", apiLimiter, (req, res) => {
       expiresIn: `${expiryDays}d`,
     });
 
-    // set JWT as cookie, 7 day age
+    // Set JWT as cookie, 7 day age
     res.cookie("authToken", token, {
-      httpOnly: true,
+      // httpOnly: true,
+      maxAge: 1000 * 86400 * expiryDays,
+      secure: cookieSecure,
+    });
+
+    res.cookie("authUser", user, {
+      // httpOnly: true,
       maxAge: 1000 * 86400 * expiryDays,
       secure: cookieSecure,
     });
@@ -151,11 +158,13 @@ app.post("/login", apiLimiter, (req, res) => {
 app.get("/logout", (req, res) => {
   console.log("Entering /logout");
   res.clearCookie("authToken");
+  res.clearCookie("authUser");
   res.redirect("/login");
 });
 
 app.post("/logout", (req, res) => {
   res.clearCookie("authToken");
+  res.clearCookie("authUser");
   res.sendStatus(200);
 });
 

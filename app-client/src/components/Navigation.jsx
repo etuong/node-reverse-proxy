@@ -1,14 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
+import RbacContext from "../rbac/RbacContext";
 
 const Navigation = () => {
   const [activeId, setActiveId] = useState(0);
+  const { isAllowed } = useContext(RbacContext);
 
   const links = [
     { href: "/", name: "Home" },
     { href: "/about", name: "About" },
-    { href: "/secret", name: "Secret" },
   ];
+
+  if (isAllowed) {
+    links.push({ href: "/secret", name: "Secret" });
+  }
 
   useEffect(() => {
     const pathname = window.location.pathname;
