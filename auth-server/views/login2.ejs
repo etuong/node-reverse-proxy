@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <style>
+      html {
+        height: 100%;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-color: #3d454d;
+      }
+      .container {
+        padding-top: 50px;
+      }
+      .title {
+        padding: 20px 20px 0 20px;
+        box-sizing: border-box;
+        background: #fff;
+        font-size: 35px;
+        font-family: "ProximaNovaLight", helvetica, arial, sans-serif;
+        text-align: center;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      .body-container {
+        box-sizing: border-box;
+        padding: 30px 50px 100px 50px;
+        max-width: 400px;
+        margin: 0 auto;
+        background: #fff;
+      }
+      .subtext {
+        text-transform: uppercase;
+        margin: 0 10px 20px 0;
+        font-size: 14px;
+        color: #929aa1;
+        font-family: "ProximaNovaRegular", helvetica, arial, sans-serif;
+      }
+      .btn {
+        display: block;
+        color: white;
+        text-transform: uppercase;
+        border-radius: 5px;
+        margin: 8px;
+        cursor: pointer;
+        background-color: #2996cc;
+        border: none;
+        padding: 0 8px;
+        margin-right: 12px;
+        font-size: 14px;
+        line-height: 36px;
+      }
+      .footer {
+        font-size: 11px;
+        color: #929aa1;
+        position: absolute;
+        bottom: 10px;
+        width: 98%;
+        text-align: center;
+        height: 90px;
+        z-index: 900;
+      }
+      .credits {
+        font-size: 14px;
+      }
+      .name {
+        color: white;
+        font-weight: 900;
+        font-size: 20px;
+      }
+
+      input[type="text"],
+      input[type="password"],
+      input[type="submit"] {
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="title">Test</div>
+
+      <div class="body-container">
+        <p class="subtext">
+          the system you are trying to reach needs to verify your identity.
+          click the appropriate button to continue.
+        </p>
+
+        <button class="btn" onclick="login('Ethan')">Test 1 (sdo)</button>
+        <button class="btn" onclick="login('Happy')">
+          Test 2 (pki, securid)
+        </button>
+        <button class="btn">Test 3 (safenet)</button>
+        <button class="btn">Test 4 (duo)</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p class="credits">Powered by <span class="name">Ethan</span></p>
+      <p>
+        Copyright © 2003-2020. Ethan Identity Corporation. All rights reserved.
+      </p>
+    </div>
+
+    <script>
+      document.title = "Log in to " + location.host;
+
+      const login = (user) => {
+        fetch("/login", {
+          method: "POST",
+          withCredentials: true,
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user }),
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            if (data && data.status === "ok") {
+              window.location.href = "/logged-in";
+              return;
+            }
+          });
+      };
+    </script>
+  </body>
+</html>
