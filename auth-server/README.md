@@ -1,7 +1,5 @@
 A very simple standalone authentication server Express app.
 
-It can be used for protecting web sites with NGINX subrequest authentication.
-
 ## Configure `.env`
 
 - `AUTH_PORT` -  Listening port of application (default: 3000)
@@ -14,8 +12,6 @@ Refer to [dotenv documentation](https://github.com/motdotla/dotenv#readme) for f
 
 
 ## Development
-
-Install [nodemon](https://nodemon.io/) globally.
 
 Install dependencies
 
@@ -35,4 +31,3 @@ Be aware that the authentication cookie used by default uses the [secure attribu
 
 - [NGINX sub request authentication](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/)
 - [Using JWTs with NodeJS tutorial](https://www.digitalocean.com/community/tutorials/nodejs-jwt-expressjs)
-- [jsonwebtoken node module](https://github.com/auth0/node-jsonwebtoken)
