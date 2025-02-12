@@ -12,7 +12,7 @@
   "scripts": {
     "start": "nodemon server.js"
   },
-  "name": "nginx-auth-server",
+  "name": "auth-server",
   "version": "1.0.0",
-  "main": "app.js"
+  "main": "server.js"
 }

@@ -22,6 +22,13 @@ An authentication server that checks for identity before users can access the Re
 
 ## Run
 
+- Build the build client
+  - `cd app-client`
+  - `npm run build`
+  - `npm run copy`
 - Start the auth and app servers.
-- By default, everyone has access to the main page of the React app
+  - `cd app-auth && npm run start` Running on localhost 3000
+  - `cd app-server && npm run start` Running on localhost 5000
+- By default, everyone has access to the main page of the React app (http://localhost:5000/)
 - Go to `/secret` to authenticate before you are authorized to view the secret page.
+- To reset authentication, clear cookies.

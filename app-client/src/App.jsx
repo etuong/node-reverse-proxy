@@ -18,23 +18,17 @@ const App = () => {
   const isAllowed = rbac.isAllowed(authUser, "EDIT") === true;
 
   return (
-    <React.Fragment>
-      <RbacContext.Provider
-        value={{
-          isAllowed,
-        }}
-      >
-        <BrowserRouter>
-          <Navigation />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            {isAllowed ? <Route path="/secret" element={<SecretPage />} /> : <></>}
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </RbacContext.Provider>
-    </React.Fragment>
+    <RbacContext.Provider value={{ isAllowed }}>
+      <BrowserRouter>
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          {isAllowed && <Route path="/secret" element={<SecretPage />} />}
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </RbacContext.Provider>
   );
 };
 
